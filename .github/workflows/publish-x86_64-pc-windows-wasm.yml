@@ -1,0 +1,90 @@
+# such target does not exist, name choosen for convention only
+name: build-x86_64-pc-windows-wasm
+# <arch>-<vendor>-<os>-<env>
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *" # run at 2 AM UTC
+  # push:
+
+jobs:
+  build-x86_64-pc-windows-msvc:
+    runs-on: windows-2022
+    strategy:
+      max-parallel: 1
+      matrix:
+        target: [x86_64-pc-windows-msvc]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Checkout Noir repo
+        uses: actions/checkout@v3
+        with:
+          repository: noir-lang/noir
+          path: noir
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Rust toolchain Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.65.0
+          target: ${{ matrix.target }}
+          default: true
+          override: true
+
+      - name: Patch backend in crates/nargo/Cargo.toml
+        working-directory: noir
+        run: |
+          (Get-Content crates/nargo/Cargo.toml) -replace 'aztec_backend = {(.+)}','aztec_backend = { optional = true, package = "barretenberg_wasm", git = "https://github.com/noir-lang/aztec_backend", rev = "d8e63d760b879116b3ecfd14bf80b86c55622089" }' | Out-File -encoding ASCII crates/nargo/Cargo.toml
+
+      - name: Build environment and Compile
+        working-directory: noir
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+
+      - name: Package artifacts
+        working-directory: noir
+        run: |
+          mkdir dist
+          ls target
+          ls target/release
+          cp ./target/${{ matrix.target }}/release/nargo.exe ./dist/nargo.exe
+          mkdir -p ./dist/noir-lang/std
+          cp noir_stdlib/src/*.nr ./dist/noir-lang/std
+          7z a -tzip nargo-${{ matrix.target }}.zip ./dist/*
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nargo-${{ matrix.target }}
+          path: ./noir/dist/*
+          retention-days: 3
+
+      - name: Test built artifact
+        shell: powershell
+        run: |
+          npm install
+          npm test
+
+      - name: Upload binaries to Noir Repo nightly tag
+        uses: svenstaro/upload-release-action@v2
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        with:
+          repo_name: noir-lang/noir
+          repo_token: ${{ secrets.NOIR_REPO_TOKEN }}
+          file: ./noir/nargo-${{ matrix.target }}.tar.gz
+          asset_name: nargo-${{ matrix.target }}.tar.gz
+          overwrite: true
+          tag: nightly

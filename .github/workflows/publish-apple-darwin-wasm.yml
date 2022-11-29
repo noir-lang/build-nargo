@@ -1,0 +1,94 @@
+name: build-apple-darwin
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *" # run at 2 AM UTC
+  # push:
+
+jobs:
+  build-apple-darwin:
+    runs-on: macos-latest
+    strategy:
+      max-parallel: 1
+      matrix:
+        target: [x86_64-apple-darwin, aarch64-apple-darwin]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Checkout Noir repo
+        uses: actions/checkout@v3
+        with:
+          repository: noir-lang/noir
+          path: noir
+
+      - name: Setup for Apple Silicon
+        if: matrix.target == 'aarch64-apple-darwin'
+        run: |
+          sudo xcode-select -s /Applications/Xcode_13.2.1.app/Contents/Developer/
+          echo "SDKROOT=$(xcrun -sdk macosx$(sw_vers -productVersion) --show-sdk-path)" >> $GITHUB_ENV
+          echo "MACOSX_DEPLOYMENT_TARGET=$(xcrun -sdk macosx$(sw_vers -productVersion) --show-sdk-platform-version)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Rust toolchain Install
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: 1.65.0
+          target: ${{ matrix.target }}
+          default: true
+          override: true
+
+      - name: Patch backend in crates/nargo/Cargo.toml
+        working-directory: noir
+        run: |
+          sed -E -i '' 's/^aztec_backend.+}/aztec_backend = { optional = true, package = "barretenberg_wasm", git = "https:\/\/github.com\/noir-lang\/aztec_backend", rev = "d8e63d760b879116b3ecfd14bf80b86c55622089" }/g' crates/nargo/Cargo.toml
+          echo 🧪 patched backend = ''$(cat crates/nargo/Cargo.toml | grep aztec_backend)''
+
+      - name: Build environment and Compile
+        working-directory: noir
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+
+      - name: Package artifacts
+        working-directory: noir
+        run: |
+          mkdir dist
+          cp ./target/${{ matrix.target }}/release/nargo ./dist/nargo
+          mkdir -p ./dist/noir-lang/std
+          cp noir_stdlib/src/*.nr ./dist/noir-lang/std
+          7z a -ttar -so -an ./dist/* | 7z a -si ./nargo-${{ matrix.target }}.tar.gz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nargo-${{ matrix.target }}
+          path: ./noir/dist/*
+          retention-days: 3
+
+      - name: Test built artifact
+        if: matrix.target == 'x86_64-apple-darwin'
+        run: |
+          npm install
+          npm test
+
+      - name: Upload binaries to Noir Repo nightly tag
+        uses: svenstaro/upload-release-action@v2
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        with:
+          repo_name: noir-lang/noir
+          repo_token: ${{ secrets.NOIR_REPO_TOKEN }}
+          file: ./noir/nargo-${{ matrix.target }}.tar.gz
+          asset_name: nargo-${{ matrix.target }}.tar.gz
+          overwrite: true
+          tag: nightly
