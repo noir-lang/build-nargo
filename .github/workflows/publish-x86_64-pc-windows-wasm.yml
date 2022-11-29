@@ -84,7 +84,7 @@ jobs:
         with:
           repo_name: noir-lang/noir
           repo_token: ${{ secrets.NOIR_REPO_TOKEN }}
-          file: ./noir/nargo-${{ matrix.target }}.tar.gz
-          asset_name: nargo-${{ matrix.target }}.tar.gz
+          file: ./noir/nargo-${{ matrix.target }}.zip
+          asset_name: nargo-${{ matrix.target }}.zip
           overwrite: true
           tag: nightly
