@@ -64,7 +64,7 @@ jobs:
       - name: Build Nargo
         working-directory: noir
         run: |
-          cargo install cross --git https://github.com/cross-rs/cross
+          cargo install cross --force --git https://github.com/cross-rs/cross
           cross build --release --target=${{ matrix.target }}
 
       - name: Package artifacts
