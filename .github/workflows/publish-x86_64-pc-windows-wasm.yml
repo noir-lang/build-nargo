@@ -62,7 +62,7 @@ jobs:
           ls target/release
           cp ./target/${{ matrix.target }}/release/nargo.exe ./dist/nargo.exe
           mkdir -p ./dist/noir-lang/std
-          cp noir_stdlib/src/*.nr ./dist/noir-lang/std
+          cp -R noir_stdlib/* ./dist/noir-lang/std/
           7z a -tzip nargo-${{ matrix.target }}.zip ./dist/*
 
       - name: Upload artifact
