@@ -52,7 +52,7 @@ jobs:
       - name: Patch backend in crates/nargo/Cargo.toml
         working-directory: noir
         run: |
-          sed -E -i '' 's/^aztec_backend.+}/aztec_backend = { optional = true, package = "barretenberg_wasm", git = "https:\/\/github.com\/noir-lang\/aztec_backend", rev = "d8e63d760b879116b3ecfd14bf80b86c55622089" }/g' crates/nargo/Cargo.toml
+          sed -E -i '' 's/^aztec_backend.+}/aztec_backend = { optional = true, package = "barretenberg_wasm", git = "https:\/\/github.com\/noir-lang\/aztec_backend", rev = "e1f206f6739d3782d3a241298089a0292de33742" }/g' crates/nargo/Cargo.toml
           echo 🧪 patched backend = ''$(cat crates/nargo/Cargo.toml | grep aztec_backend)''
 
       - name: Build environment and Compile

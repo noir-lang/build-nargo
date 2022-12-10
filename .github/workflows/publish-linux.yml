@@ -21,6 +21,8 @@ jobs:
         target: [
             x86_64-unknown-linux-gnu,
             x86_64-unknown-linux-musl,
+            i686-unknown-linux-gnu,
+            i686-unknown-linux-musl,
             aarch64-unknown-linux-gnu,
             aarch64-unknown-linux-musl,
             # arm-unknown-linux-gnueabihf,
@@ -42,7 +44,7 @@ jobs:
         working-directory: noir
         run: |
           sed -i -E 's/\[dependencies\]/\[dependencies\]\nopenssl = { version = "0.10", features = ["vendored"] }/g' ./crates/nargo/Cargo.toml
-          sed -i -E 's/^aztec_backend.+}/aztec_backend = { optional = true, package = "barretenberg_wasm", git = "https:\/\/github.com\/noir-lang\/aztec_backend", rev = "d8e63d760b879116b3ecfd14bf80b86c55622089" }/g' ./crates/nargo/Cargo.toml
+          sed -i -E 's/^aztec_backend.+}/aztec_backend = { optional = true, package = "barretenberg_wasm", git = "https:\/\/github.com\/noir-lang\/aztec_backend", rev = "e1f206f6739d3782d3a241298089a0292de33742" }/g' ./crates/nargo/Cargo.toml
           echo 🧪 patched backend = ''$(cat crates/nargo/Cargo.toml | grep aztec_backend)''
 
       - uses: actions/cache@v3
