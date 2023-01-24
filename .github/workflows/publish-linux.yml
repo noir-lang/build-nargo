@@ -39,11 +39,6 @@ jobs:
           path: noir
           ref: ${{ inputs.noir-ref || 'master' }}
 
-      - name: Patch openssl for cross-compile
-        working-directory: noir
-        run: |
-          sed -i -E 's/\[dependencies\]/\[dependencies\]\nopenssl = { version = "0.10", features = ["vendored"] }/g' ./crates/nargo/Cargo.toml
-
       - uses: actions/cache@v3
         with:
           path: |
