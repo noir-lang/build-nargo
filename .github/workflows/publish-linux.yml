@@ -2,11 +2,13 @@ name: build-linux
 
 on:
   workflow_dispatch:
+    inputs:
+      noir-ref:
+        description: The noir reference to checkout
+        required: false
   schedule:
     - cron: "0 2 * * *" # run at 2 AM UTC
   push:
-    tags:
-      - "v*"
 
 env:
   CROSS_CONFIG: ${{ github.workspace }}/.github/Cross.toml
@@ -15,37 +17,32 @@ jobs:
   build-linux:
     runs-on: ubuntu-22.04
     strategy:
-      # max-parallel: 1
       fail-fast: false
       matrix:
-        target: [
+        target:
+          [
             x86_64-unknown-linux-gnu,
             x86_64-unknown-linux-musl,
-            i686-unknown-linux-gnu,
-            i686-unknown-linux-musl,
             aarch64-unknown-linux-gnu,
             aarch64-unknown-linux-musl,
-            # arm-unknown-linux-gnueabihf,
-            # arm-unknown-linux-musleabihf,
             riscv64gc-unknown-linux-gnu,
           ]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - name: Checkout Noir repo
         uses: actions/checkout@v3
         with:
           repository: noir-lang/noir
           path: noir
+          ref: ${{ inputs.noir-ref || 'master' }}
 
-      - name: Patch backend in crates/nargo/Cargo.toml
+      - name: Patch openssl for cross-compile
         working-directory: noir
         run: |
           sed -i -E 's/\[dependencies\]/\[dependencies\]\nopenssl = { version = "0.10", features = ["vendored"] }/g' ./crates/nargo/Cargo.toml
-          sed -i -E 's/^aztec_backend.+}/aztec_backend = { optional = true, package = "barretenberg_wasm", git = "https:\/\/github.com\/noir-lang\/aztec_backend", rev = "e1f206f6739d3782d3a241298089a0292de33742" }/g' ./crates/nargo/Cargo.toml
-          echo 🧪 patched backend = ''$(cat crates/nargo/Cargo.toml | grep aztec_backend)''
 
       - uses: actions/cache@v3
         with:
@@ -57,18 +54,16 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - uses: actions-rs/toolchain@v1
+      - name: Setup toolchain
+        uses: dtolnay/rust-toolchain@1.65.0
         with:
-          toolchain: 1.65.0
-          target: ${{ matrix.target }}
-          default: true
-          override: true
+          targets: ${{ matrix.target }}
 
       - name: Build Nargo
         working-directory: noir
         run: |
           cargo install cross --force --git https://github.com/cross-rs/cross
-          cross build --release --target=${{ matrix.target }}
+          cross build --package nargo --release --target=${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
 
       - name: Package artifacts
         working-directory: noir
@@ -87,12 +82,12 @@ jobs:
           retention-days: 3
 
       - name: Test built artifact
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        if: startsWith(matrix.target, 'x86_64-unknown-linux')
         run: |
           npm install
           npm test
 
-      - name: Upload binaries to Noir Repo nightly tag
+      - name: Upload binaries to Noir Repo
         uses: svenstaro/upload-release-action@v2
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         with:
@@ -101,4 +96,4 @@ jobs:
           file: ./noir/nargo-${{ matrix.target }}.tar.gz
           asset_name: nargo-${{ matrix.target }}.tar.gz
           overwrite: true
-          tag: nightly
+          tag: ${{ inputs.noir-ref || 'nightly' }} # This will fail if noir-ref is not a tag (e.g. testing a branch)
