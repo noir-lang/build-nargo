@@ -40,7 +40,7 @@ test("prints version", async () => {
 test("nargo builds noir/test/test_data/6_array sucessfully", async () => {
   await within(async () => {
     cd("./noir/crates/nargo/tests/test_data/6_array");
-    const command = `${nargoBin} build`;
+    const command = `${nargoBin} check`;
     const processOutput = (await $`${command}`).toString();
     assert.match(processOutput, "Constraint system successfully built!");
   });
