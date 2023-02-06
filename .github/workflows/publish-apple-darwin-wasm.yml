@@ -1,11 +1,21 @@
 name: build-apple-darwin
 
 on:
+  workflow_call:
+    inputs:
+      noir-ref:
+        description: The noir reference to checkout
+        required: true # Required so it can only be run on a tag as a workflow_call
+        type: string
+    secrets:
+      NOIR_REPO_TOKEN:
+        required: true
   workflow_dispatch:
     inputs:
       noir-ref:
         description: The noir reference to checkout
         required: false
+        type: string
   schedule:
     - cron: "0 2 * * *" # run at 2 AM UTC
   push:
