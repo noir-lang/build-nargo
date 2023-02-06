@@ -25,7 +25,6 @@ jobs:
             x86_64-unknown-linux-musl,
             aarch64-unknown-linux-gnu,
             aarch64-unknown-linux-musl,
-            riscv64gc-unknown-linux-gnu,
           ]
 
     steps:
@@ -38,11 +37,6 @@ jobs:
           repository: noir-lang/noir
           path: noir
           ref: ${{ inputs.noir-ref || 'master' }}
-
-      - name: Patch openssl for cross-compile
-        working-directory: noir
-        run: |
-          sed -i -E 's/\[dependencies\]/\[dependencies\]\nopenssl = { version = "0.10", features = ["vendored"] }/g' ./crates/nargo/Cargo.toml
 
       - uses: actions/cache@v3
         with:
