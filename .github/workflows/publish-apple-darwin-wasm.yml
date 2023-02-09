@@ -64,6 +64,15 @@ jobs:
           cp -r noir_stdlib/* ./dist/noir-lang/std/
           7z a -ttar -so -an ./dist/* | 7z a -si ./nargo-${{ matrix.target }}.tar.gz
 
+      # Nargo appends "modified" to its build commit if the commit had uncommitted changes.
+      # We want to avoid this making it into a stable release so reject if this string is present. 
+      - name: Check for dirty build
+        working-directory: ./dist
+        run: |
+          if grep -q "modified" <<< $(./nargo --version); then
+              echo "::error::Building Nargo from a dirty commit" && exit 1
+          fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
