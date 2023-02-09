@@ -71,7 +71,7 @@ jobs:
       # Nargo appends "modified" to its build commit if the commit had uncommitted changes.
       # We want to avoid this making it into a stable release so reject if this string is present. 
       - name: Check for dirty build
-        working-directory: ./dist
+        working-directory: ./noir/dist
         run: |
           if grep -q "modified" <<< $(./nargo --version); then
               echo "::error::Building Nargo from a dirty commit" && exit 1
