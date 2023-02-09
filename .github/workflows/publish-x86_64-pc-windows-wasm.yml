@@ -65,6 +65,7 @@ jobs:
       # We want to avoid this making it into a stable release so reject if this string is present. 
       - name: Check for dirty build
         working-directory: ./noir/dist
+        shell: bash
         run: |
           if grep -q "modified" <<< $(./nargo --version); then
               echo "::error::Building Nargo from a dirty commit" && exit 1
