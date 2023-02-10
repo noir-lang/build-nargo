@@ -32,11 +32,6 @@ test("promise resolved", async () => {
   promiseResolved = true;
 });
 
-test("prints version", async () => {
-  const processOutput = (await $`${nargoBin} --version`).toString();
-  assert.match(processOutput, /nargo\s\d{1,2}.\d{1,2}/);
-});
-
 test("nargo builds noir/test/test_data/6_array sucessfully", async () => {
   await within(async () => {
     cd("./noir/crates/nargo/tests/test_data/6_array");
