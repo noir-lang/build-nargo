@@ -39,7 +39,7 @@ test("prints version", async () => {
 
 test("reports a clean commit", async () => {
   const processOutput = (await $`${nargoBin} --version`).toString();
-  assert.not.match(processOutput, /modified/)
+  assert.not.match(processOutput, /is dirty: true/)
 });
 
 test.run();
