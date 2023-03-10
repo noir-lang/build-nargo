@@ -84,3 +84,13 @@ jobs:
           asset_name: nargo-${{ matrix.target }}.zip
           overwrite: true
           tag: ${{ inputs.noir-ref || 'nightly' }} # This will fail if noir-ref is not a tag (e.g. testing a branch)
+      
+      - uses: JasonEtco/create-an-issue@v2
+        if: ${{ failure() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          update_existing: true
+          filename: .github/NIGHTLY_BUILD_FAILURE.md
