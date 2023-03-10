@@ -83,7 +83,9 @@ jobs:
           overwrite: true
           tag: ${{ inputs.noir-ref || 'nightly' }} # This will fail if noir-ref is not a tag (e.g. testing a branch)
       
-      - uses: JasonEtco/create-an-issue@v2
+      # If we're performing a nightly build and it fails acceptance tests then raise an issue.
+      - name: Alert on nightly build failure
+        uses: JasonEtco/create-an-issue@v2
         if: ${{ failure() && github.event_name == 'schedule' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
