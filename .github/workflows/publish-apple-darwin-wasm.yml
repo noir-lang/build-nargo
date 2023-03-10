@@ -89,7 +89,7 @@ jobs:
           tag: ${{ inputs.noir-ref || 'nightly' }} # This will fail if noir-ref is not a tag (e.g. testing a branch)
 
       - uses: JasonEtco/create-an-issue@v2
-        if: ${{ failure() }}
+        if: ${{ failure() }} && github.event_name == 'schedule'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WORKFLOW_NAME: ${{ github.workflow }}
