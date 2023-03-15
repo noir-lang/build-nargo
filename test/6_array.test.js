@@ -9,7 +9,9 @@ const nargoBinPath = path.join(process.cwd(), "noir/dist/");
 const nargoBin = path.join(nargoBinPath, "nargo");
 
 if (process.platform == "win32") {
-  $.shell = "powershell";
+  $.shell = 'powershell'
+  $.prefix = '';
+  $.postfix = '; exit $LastExitCode'
 }
 
 $.quote = (arg) => {
