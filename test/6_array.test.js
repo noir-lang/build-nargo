@@ -5,16 +5,6 @@ import "./utils/zx.js";
 
 const test = suite("nargo");
 
-if (process.platform == "win32") {
-  $.shell = "powershell";
-}
-
-$.quote = (arg) => {
-  return arg;
-};
-
-$.verbose = true;
-
 // Helps detect unresolved ProcessPromise.
 let promiseResolved = false;
 process.on("exit", () => {
