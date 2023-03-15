@@ -71,6 +71,8 @@ jobs:
         run: |
           npm install
           npm test
+        env:
+          NARGO_PATH: "./noir/dist/nargo"
 
       - name: Upload binaries to Noir Repo
         uses: svenstaro/upload-release-action@v2
