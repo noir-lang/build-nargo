@@ -1,6 +1,5 @@
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
-import { cd } from "zx";
 import "zx/globals";
 
 const test = suite("nargo");
