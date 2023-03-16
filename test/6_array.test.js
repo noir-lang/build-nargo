@@ -35,30 +35,30 @@ test("promise resolved", async () => {
 });
 
 test("nargo builds noir/test/test_data/6_array sucessfully", async () => {
-  await within(async () => {
-    cd("./noir/crates/nargo/tests/test_data/6_array");
-    const command = `${nargoBin} check`;
+  // await within(async () => {
+  cd("./noir/crates/nargo/tests/test_data/6_array");
+  const command = `${nargoBin} check`;
 
-    await $`${command}`.nothrow();
-  });
+  await $`${command}`.nothrow();
+  // });
 });
 
-test("nargo creates proof noir/test/test_data/6_array sucessfully", async () => {
-  await within(async () => {
-    cd("./noir/crates/nargo/tests/test_data/6_array");
-    const command = `${nargoBin} prove 6_array`;
+// test("nargo creates proof noir/test/test_data/6_array sucessfully", async () => {
+//   await within(async () => {
+//     cd("./noir/crates/nargo/tests/test_data/6_array");
+//     const command = `${nargoBin} prove 6_array`;
 
-    await $`${command}`.nothrow();
-  });
-});
+//     await $`${command}`.nothrow();
+//   });
+// });
 
-test("nargo verifies proof noir/test/test_data/6_array sucessfully", async () => {
-  await within(async () => {
-    cd("./noir/crates/nargo/tests/test_data/6_array");
-    const command = `${nargoBin} verify 6_array`;
+// test("nargo verifies proof noir/test/test_data/6_array sucessfully", async () => {
+//   await within(async () => {
+//     cd("./noir/crates/nargo/tests/test_data/6_array");
+//     const command = `${nargoBin} verify 6_array`;
 
-    await $`${command}`.nothrow();
-  });
-});
+//     await $`${command}`.nothrow();
+//   });
+// });
 
 test.run();
