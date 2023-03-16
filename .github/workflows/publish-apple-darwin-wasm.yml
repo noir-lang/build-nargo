@@ -53,13 +53,13 @@ jobs:
       - name: Build environment and Compile
         working-directory: noir
         run: |
-          cargo install --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cargo build --package nargo --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
 
       - name: Package artifacts
         working-directory: noir
         run: |
           mkdir dist
-          cp ~/.cargo/bin/nargo ./dist/nargo
+          cp ./target/${{ matrix.target }}/release/nargo ./dist/nargo
           7z a -ttar -so -an ./dist/* | 7z a -si ./nargo-${{ matrix.target }}.tar.gz
 
       - name: Upload artifact
@@ -72,6 +72,7 @@ jobs:
       - name: Test built artifact
         if: matrix.target == 'x86_64-apple-darwin'
         run: |
+          cp ./target/${{ matrix.target }}/release/nargo ~/.cargo/bin/
           npm install
           npm test
 

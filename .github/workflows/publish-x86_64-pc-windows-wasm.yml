@@ -48,13 +48,13 @@ jobs:
       - name: Build environment and Compile
         working-directory: noir
         run: |
-          cargo install --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cargo build --package nargo --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
 
       - name: Package artifacts
         working-directory: noir
         run: |
           mkdir dist
-          cp ~/.cargo/bin/nargo.exe ./dist/nargo.exe
+          cp ./target/${{ matrix.target }}/release/nargo.exe ./dist/nargo.exe
           7z a -tzip nargo-${{ matrix.target }}.zip ./dist/*
 
       - name: Upload artifact
@@ -67,6 +67,7 @@ jobs:
       - name: Test built artifact
         shell: powershell
         run: |
+          cp ./target/${{ matrix.target }}/release/nargo ~/.cargo/bin/
           npm install
           npm test
 
