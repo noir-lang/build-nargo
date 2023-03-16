@@ -48,15 +48,13 @@ jobs:
       - name: Build environment and Compile
         working-directory: noir
         run: |
-          cargo build --package nargo --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cargo install --package nargo --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
 
       - name: Package artifacts
         working-directory: noir
         run: |
           mkdir dist
-          ls target
-          ls target/release
-          cp ./target/${{ matrix.target }}/release/nargo.exe ./dist/nargo.exe
+          cp ~/.cargo/bin/nargo.exe ./dist/nargo.exe
           7z a -tzip nargo-${{ matrix.target }}.zip ./dist/*
 
       - name: Upload artifact
@@ -71,8 +69,6 @@ jobs:
         run: |
           npm install
           npm test
-        env:
-          NARGO_PATH: "./noir/dist/nargo"
 
       - name: Upload binaries to Noir Repo
         uses: svenstaro/upload-release-action@v2
