@@ -26,7 +26,7 @@ jobs:
         with:
           repository: noir-lang/noir
           path: noir
-          ref: ${{ inputs.noir-ref || 'master' }}
+          ref: 7955b1ead2ed3128bbe64bec75a07a2ccaa05ed3
 
       - name: Setup for Apple Silicon
         if: matrix.target == 'aarch64-apple-darwin'
