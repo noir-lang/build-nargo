@@ -67,7 +67,8 @@ jobs:
       - name: Test built artifact
         shell: powershell
         run: |
-          cp ./noir/target/${{ matrix.target }}/release/nargo ~/.cargo/bin/
+          cp ./noir/target/${{ matrix.target }}/release/nargo.exe ~/.cargo/bin/
+
           npm install
           npm test
 
