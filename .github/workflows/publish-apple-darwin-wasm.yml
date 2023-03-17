@@ -60,7 +60,6 @@ jobs:
         run: |
           mkdir dist
           cp ./target/${{ matrix.target }}/release/nargo ./dist/nargo
-
           7z a -ttar -so -an ./dist/* | 7z a -si ./nargo-${{ matrix.target }}.tar.gz
 
       - name: Upload artifact
