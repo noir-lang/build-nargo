@@ -54,8 +54,6 @@ jobs:
         working-directory: noir
         run: |
           mkdir dist
-          ls target
-          ls target/release
           cp ./target/${{ matrix.target }}/release/nargo.exe ./dist/nargo.exe
           7z a -tzip nargo-${{ matrix.target }}.zip ./dist/*
 
@@ -69,6 +67,8 @@ jobs:
       - name: Test built artifact
         shell: powershell
         run: |
+          cp ./noir/target/${{ matrix.target }}/release/nargo.exe ~/.cargo/bin/
+
           npm install
           npm test
 

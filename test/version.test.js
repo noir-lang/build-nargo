@@ -1,22 +1,9 @@
 import { suite } from "uvu";
 import * as assert from "uvu/assert";
-import { cd } from "zx";
-import "zx/globals";
+import { NARGO_BIN } from "./utils/nargo.js";
+import "./utils/zx.js";
 
 const test = suite("nargo");
-
-const nargoBinPath = path.join(process.cwd(), "noir/dist/");
-const nargoBin = path.join(nargoBinPath, "nargo");
-
-if (process.platform == "win32") {
-  $.shell = "powershell";
-}
-
-$.quote = (arg) => {
-  return arg;
-};
-
-$.verbose = true;
 
 // Helps detect unresolved ProcessPromise.
 let promiseResolved = false;
@@ -33,12 +20,12 @@ test("promise resolved", async () => {
 });
 
 test("prints version", async () => {
-  const processOutput = (await $`${nargoBin} --version`).toString();
+  const processOutput = (await $`${NARGO_BIN} --version`).toString();
   assert.match(processOutput, /nargo\s\d{1,2}.\d{1,2}/);
 });
 
 test("reports a clean commit", async () => {
-  const processOutput = (await $`${nargoBin} --version`).toString();
+  const processOutput = (await $`${NARGO_BIN} --version`).toString();
   assert.not.match(processOutput, /is dirty: true/)
 });
 
