@@ -57,7 +57,7 @@ jobs:
         working-directory: noir
         run: |
           cargo install cross --force --git https://github.com/cross-rs/cross
-          cross build --package nargo_cli --release --target=${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cross build --package nargo_cli --release --target=${{ matrix.target }} --no-default-features --features nargo/plonk_bn254_wasm
 
       - name: Package artifacts
         working-directory: noir
