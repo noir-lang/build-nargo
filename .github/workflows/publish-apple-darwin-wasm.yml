@@ -6,6 +6,10 @@ on:
       noir-ref:
         description: The noir reference to checkout
         required: false
+      publish:
+        type: boolean
+        description: Whether to publish the build artifacts
+        default: false
   schedule:
     - cron: "0 2 * * *" # run at 2 AM UTC
   push:
@@ -79,7 +83,7 @@ jobs:
 
       - name: Upload binaries to Noir Repo
         uses: svenstaro/upload-release-action@v2
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: ${{ inputs.publish || github.event_name == 'schedule' }} # A scheduled run implies a nightly release
         with:
           repo_name: noir-lang/noir
           repo_token: ${{ secrets.NOIR_REPO_TOKEN }}
