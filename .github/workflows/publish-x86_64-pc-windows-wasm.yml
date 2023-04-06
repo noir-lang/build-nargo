@@ -52,7 +52,7 @@ jobs:
       - name: Build environment and Compile
         working-directory: noir
         run: |
-          cargo build --package nargo --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cargo build --package nargo_cli --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
 
       - name: Package artifacts
         working-directory: noir
