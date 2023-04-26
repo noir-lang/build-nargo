@@ -8,6 +8,7 @@
 passthrough = [
     "HOME",
     "RUST_BACKTRACE",
+    "BARRETENBERG_BIN_DIR"
 ]
 volumes = [
     "HOME",
