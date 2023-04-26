@@ -2,7 +2,7 @@ name: build-linux
 
 on: 
   workflow_run:
-    workflows: ["build-libbarretenberg"]
+    workflows: [ build-libbarretenberg ]
     types:
       - completed
 
