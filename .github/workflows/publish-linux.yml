@@ -75,9 +75,15 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Download pre-built libbarretenberg-wasm32
+        id: libbarretenberg-download
         uses: actions/download-artifact@v3
         with:
           name: libbarretenberg-wasm32
+
+      - name: 'Echo download path'
+        run: |
+          echo Donwload Path for bb: ${{steps.libbarretenberg-download.outputs.download-path}}
+          ls -R ${{steps.libbarretenberg-download.outputs.download-path}}
 
       - name: Setup toolchain
         uses: dtolnay/rust-toolchain@1.66.0
