@@ -5,6 +5,9 @@ on:
   workflow_run:
     workflows:
       - libbarretenberg
+    branches:
+      - master
+      - kh-wasm-from-nix-dbg
     types:
       - completed
 
