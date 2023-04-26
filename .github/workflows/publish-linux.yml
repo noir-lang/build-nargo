@@ -1,3 +1,4 @@
+---
 name: build-linux
 
 on: 
@@ -5,7 +6,7 @@ on:
     workflows:
       - libbarretenberg
     types:
-      -   completed
+      - completed
 
 env:
   CROSS_CONFIG: ${{ github.workspace }}/.github/Cross.toml
