@@ -8,9 +8,9 @@ on:
       noir-ref:
         description: The noir reference to checkout
         required: false
-  schedule:
-    - cron: "0 2 * * *" # run at 2 AM UTC
-  push:
+  # schedule:
+  #   - cron: "0 2 * * *" # run at 2 AM UTC
+  # push:
 
 jobs:
   build-x86_64-pc-windows-msvc:
