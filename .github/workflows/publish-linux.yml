@@ -63,9 +63,13 @@ jobs:
           name: barretenberg
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
-      - name: Build barretenberg as libbarretenberg-wasm32
+      - name: Collect locked barretenberg rev
         run: |
           echo "BB_REV=$(jq -r .nodes.barretenberg.locked.rev ./noir/flake.lock)" >> $GITHUB_ENV
+  
+      - name: Build barretenberg as libbarretenberg-wasm32
+        run: |
+          echo $BB_REV
           nix build "git+https://github.com/AztecProtocol/barretenberg?rev=${{ env.BB_REV }}#wasm32"
   
       - name: Setup toolchain
