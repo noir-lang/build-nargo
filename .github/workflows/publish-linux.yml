@@ -65,7 +65,8 @@ jobs:
 
       - name: Build barretenberg as libbarretenberg-wasm32
         run: |
-          nix build "git+https://github.com/AztecProtocol/barretenberg?rev=$(jq -r .nodes.barretenberg.locked.rev noir/flake.lock)#wasm32"
+          echo "BB_REV=$(jq -r .nodes.barretenberg.locked.rev noir/flake.lock)" >> $GITHUB_ENV
+          nix build "git+https://github.com/AztecProtocol/barretenberg?rev=${{ env.BB_REV }}#wasm32"
   
       - name: Setup toolchain
         uses: dtolnay/rust-toolchain@1.66.0
