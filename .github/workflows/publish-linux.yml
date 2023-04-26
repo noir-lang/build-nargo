@@ -30,7 +30,9 @@ jobs:
       - name: Build barretenberg as libbarretenberg-wasm32
         run: |
           nix build "git+https://github.com/AztecProtocol/barretenberg#wasm32"
-          
+          ls -lah .
+          ls -lah ./result
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
