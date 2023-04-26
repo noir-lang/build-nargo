@@ -31,13 +31,14 @@ jobs:
         run: |
           nix build "git+https://github.com/AztecProtocol/barretenberg#wasm32"
           ls -lah .
-          ls -lah ./result
+          ls -lah ./result/
+          ls -lah ./result/bin
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: libbarretenberg-wasm32
-          path: ./result
+          path: ./result/
           retention-days: 3
 
   build-linux:
