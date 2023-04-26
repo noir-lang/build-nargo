@@ -1,4 +1,4 @@
-name: build-libbarretenberg
+name: libbarretenberg
 
 on:
   workflow_dispatch:
