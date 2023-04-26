@@ -49,6 +49,7 @@ jobs:
 
   build-apple-darwin:
     runs-on: macos-latest
+    needs: build-barretenberg
     strategy:
       matrix:
         target: [x86_64-apple-darwin, aarch64-apple-darwin]

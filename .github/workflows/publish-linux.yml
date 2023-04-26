@@ -48,6 +48,7 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-22.04
+    needs: build-barretenberg
     strategy:
       fail-fast: false
       matrix:

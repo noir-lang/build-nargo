@@ -50,6 +50,7 @@ jobs:
 
   build-x86_64-pc-windows-msvc:
     runs-on: windows-2022
+    needs: build-barretenberg
     strategy:
       matrix:
         target: [x86_64-pc-windows-msvc]
