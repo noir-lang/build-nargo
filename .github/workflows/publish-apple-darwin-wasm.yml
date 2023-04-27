@@ -1,55 +1,16 @@
 name: build-apple-darwin
 
-# on: 
-#   workflow_run:
-#     workflows:
-#       - libbarretenberg
-#     branches:
-#       - master
-#     types:
-#       - completed
+on: 
+  workflow_run:
+    workflows:
+      - libbarretenberg
+    types:
+      - completed
 
-on:
-  workflow_dispatch:
-    inputs:
-      noir-ref:
-        description: The noir reference to checkout
-        required: false
-  schedule:
-    - cron: "0 2 * * *" # run at 2 AM UTC
-  push:
 
 jobs:
-  build-barretenberg:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: cachix/install-nix-action@v20
-        with:
-          nix_path: nixpkgs=channel:nixos-22.11
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: cachix/cachix-action@v12
-        with:
-          name: barretenberg
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-
-      # Upload does not work with symlinks, using this workaround:
-      # https://github.com/actions/upload-artifact/issues/92#issuecomment-1080347032    
-      - name: Build barretenberg as libbarretenberg-wasm32
-        run: |
-          nix build "git+https://github.com/AztecProtocol/barretenberg#wasm32"
-          echo "ARTIFACT_UPLOAD_PATH=$(readlink -f result)" >> $GITHUB_ENV
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: libbarretenberg-wasm32
-          path: ${{ env.ARTIFACT_UPLOAD_PATH }}
-          retention-days: 3
-
   build-apple-darwin:
     runs-on: macos-latest
-    needs: build-barretenberg
     strategy:
       matrix:
         target: [x86_64-apple-darwin, aarch64-apple-darwin]
@@ -82,12 +43,11 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Download pre-built libbarretenberg-wasm32
-        id: libbarretenberg-download
-        uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: libbarretenberg-wasm32
-          path: libbarretenberg-wasm32
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          workflow_conclusion: success
 
       - name: Setup toolchain
         uses: dtolnay/rust-toolchain@1.66.0
@@ -97,7 +57,7 @@ jobs:
       - name: Build environment and Compile
         working-directory: noir
         env:
-          BARRETENBERG_BIN_DIR: ${{steps.libbarretenberg-download.outputs.download-path}}
+          BARRETENBERG_BIN_DIR: ${{ github.workspace }}/libbarretenberg-wasm32/bin
         run: |
           cargo build --package nargo_cli --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
 

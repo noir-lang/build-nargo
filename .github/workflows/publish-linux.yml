@@ -6,49 +6,13 @@ on:
       - libbarretenberg
     types:
       - completed
-  workflow_dispatch:
-    inputs:
-      noir-ref:
-        description: The noir reference to checkout
-        required: false
-  schedule:
-    - cron: "0 2 * * *" # run at 2 AM UTC
-  push:
 
 env:
   CROSS_CONFIG: ${{ github.workspace }}/.github/Cross.toml
 
 jobs:
-  build-barretenberg:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: cachix/install-nix-action@v20
-        with:
-          nix_path: nixpkgs=channel:nixos-22.11
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: cachix/cachix-action@v12
-        with:
-          name: barretenberg
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-
-      # Upload does not work with symlinks, using this workaround:
-      # https://github.com/actions/upload-artifact/issues/92#issuecomment-1080347032    
-      - name: Build barretenberg as libbarretenberg-wasm32
-        run: |
-          nix build "git+https://github.com/AztecProtocol/barretenberg#wasm32"
-          echo "ARTIFACT_UPLOAD_PATH=$(readlink -f result)" >> $GITHUB_ENV
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: libbarretenberg-wasm32
-          path: ${{ env.ARTIFACT_UPLOAD_PATH }}
-          retention-days: 3
-
   build-linux:
     runs-on: ubuntu-22.04
-    needs: build-barretenberg
     strategy:
       fail-fast: false
       matrix:
@@ -83,11 +47,11 @@ jobs:
 
       - name: Download pre-built libbarretenberg-wasm32
         id: libbarretenberg-download
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: libbarretenberg-wasm32
-          path: libbarretenberg-wasm32
-
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          workflow_conclusion: success
+  
       - name: Setup toolchain
         uses: dtolnay/rust-toolchain@1.66.0
         with:
@@ -96,7 +60,7 @@ jobs:
       - name: Build Nargo
         working-directory: noir
         env:
-          BARRETENBERG_BIN_DIR: ${{steps.libbarretenberg-download.outputs.download-path}}
+          BARRETENBERG_BIN_DIR: ${{ github.workspace }}/libbarretenberg-wasm32/bin
         run: |
           cargo install cross --force --git https://github.com/cross-rs/cross
           cross build --package nargo_cli --release --target=${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
