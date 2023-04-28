@@ -25,7 +25,6 @@ jobs:
     - name: Collect locked barretenberg rev
       run: |
         echo "BB_REV=$(jq -r .nodes.barretenberg.locked.rev ./noir/flake.lock)" >> $GITHUB_ENV
-  
 
     - uses: cachix/install-nix-action@v20
       with:
