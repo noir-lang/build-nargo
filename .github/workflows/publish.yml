@@ -6,10 +6,10 @@ on:
       noir-ref:
         description: The noir reference to checkout
         required: false
-    publish:
-      description: Whether to publish the build artifacts
-      type: boolean
-      default: false
+      publish:
+        description: Whether to publish the build artifacts
+        type: boolean
+        default: false
   schedule:
     - cron: "0 2 * * *" # run at 2 AM UTC
   push:
