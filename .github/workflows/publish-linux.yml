@@ -45,7 +45,9 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Download pre-built libbarretenberg-wasm32
+      # We use an unofficial download plugin to support cross-workflow downloads
+      # Ref https://github.com/actions/download-artifact/issues/172
+      - name: Download artifact
         id: libbarretenberg-download
         uses: dawidd6/action-download-artifact@v2
         with:
