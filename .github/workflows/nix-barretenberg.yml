@@ -14,38 +14,37 @@ jobs:
   build-barretenberg:
     runs-on: ubuntu-latest
     steps:
-    
-    - name: Checkout Noir repo
-      uses: actions/checkout@v3
-      with:
-        repository: noir-lang/noir
-        path: noir
-        ref: ${{ inputs.noir-ref || 'master' }}
+      - name: Checkout Noir repo
+        uses: actions/checkout@v3
+        with:
+          repository: noir-lang/noir
+          path: noir
+          ref: ${{ inputs.noir-ref || 'master' }}
 
-    - name: Collect locked barretenberg rev
-      run: |
-        echo "BB_REV=$(jq -r .nodes.barretenberg.locked.rev ./noir/flake.lock)" >> $GITHUB_ENV
+      - name: Collect locked barretenberg rev
+        run: |
+          echo "BB_REV=$(jq -r .nodes.barretenberg.locked.rev ./noir/flake.lock)" >> $GITHUB_ENV
 
-    - uses: cachix/install-nix-action@v20
-      with:
-        nix_path: nixpkgs=channel:nixos-22.11
-        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: cachix/install-nix-action@v20
+        with:
+          nix_path: nixpkgs=channel:nixos-22.11
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - uses: cachix/cachix-action@v12
-      with:
-        name: barretenberg
-        authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - uses: cachix/cachix-action@v12
+        with:
+          name: barretenberg
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
-    # Upload does not work with symlinks, using this workaround:
-    # https://github.com/actions/upload-artifact/issues/92#issuecomment-1080347032    
-    - name: Build barretenberg as libbarretenberg-wasm32
-      run: |
-        nix build "git+https://github.com/AztecProtocol/barretenberg?rev=${{ env.BB_REV }}#wasm32"
-        echo "ARTIFACT_UPLOAD_PATH=$(readlink -f result)" >> $GITHUB_ENV
+      # Upload does not work with symlinks, using this workaround:
+      # https://github.com/actions/upload-artifact/issues/92#issuecomment-1080347032
+      - name: Build barretenberg as libbarretenberg-wasm32
+        run: |
+          nix build "git+https://github.com/AztecProtocol/barretenberg?rev=${{ env.BB_REV }}#wasm32"
+          echo "ARTIFACT_UPLOAD_PATH=$(readlink -f result)" >> $GITHUB_ENV
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: libbarretenberg-wasm32
-        path: ${{ env.ARTIFACT_UPLOAD_PATH }}
-        retention-days: 3
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: libbarretenberg-wasm32
+          path: ${{ env.ARTIFACT_UPLOAD_PATH }}
+          retention-days: 3

@@ -1,12 +1,11 @@
 name: build-apple-darwin
 
-on: 
+on:
   workflow_run:
     workflows:
       - libbarretenberg
     types:
       - completed
-
 
 jobs:
   build-apple-darwin:
@@ -98,7 +97,7 @@ jobs:
       # If we're performing a nightly build and it fails acceptance tests then raise an issue.
       - name: Alert on nightly build failure
         uses: JasonEtco/create-an-issue@v2
-        if: ${{ failure() && github.event_name == 'schedule' }} 
+        if: ${{ failure() && github.event_name == 'schedule' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WORKFLOW_NAME: ${{ github.workflow }}

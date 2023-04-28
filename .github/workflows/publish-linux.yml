@@ -53,7 +53,7 @@ jobs:
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           workflow_conclusion: success
-  
+
       - name: Setup toolchain
         uses: dtolnay/rust-toolchain@1.66.0
         with:
