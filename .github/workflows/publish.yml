@@ -56,6 +56,8 @@ jobs:
   build-apple-darwin:
     needs: [build-barretenberg]
     runs-on: macos-latest
+    env:
+      CROSS_CONFIG: ${{ github.workspace }}/.github/Cross.toml
     strategy:
       matrix:
         target: [x86_64-apple-darwin, aarch64-apple-darwin]
@@ -152,6 +154,8 @@ jobs:
   build-linux:
     needs: [build-barretenberg]
     runs-on: ubuntu-22.04
+    env:
+      CROSS_CONFIG: ${{ github.workspace }}/.github/Cross.toml
     strategy:
       fail-fast: false
       matrix:
@@ -249,6 +253,8 @@ jobs:
   build-windows:
     needs: [build-barretenberg]
     runs-on: windows-2022
+    env:
+      CROSS_CONFIG: ${{ github.workspace }}/.github/Cross.toml
     strategy:
       matrix:
         target: [x86_64-pc-windows-msvc]
