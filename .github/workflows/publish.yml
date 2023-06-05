@@ -53,6 +53,18 @@ jobs:
           path: ${{ env.ARTIFACT_UPLOAD_PATH }}
           retention-days: 3
 
+      # If we're performing a nightly build and it fails acceptance tests then raise an issue.
+      - name: Alert on nightly build failure
+        uses: JasonEtco/create-an-issue@v2
+        if: ${{ failure() && github.event_name == 'schedule' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          update_existing: true
+          filename: .github/NIGHTLY_BUILD_FAILURE.md
+
   build-apple-darwin:
     needs: [build-barretenberg]
     runs-on: macos-latest
