@@ -46,7 +46,7 @@ jobs:
       # https://github.com/actions/upload-artifact/issues/92#issuecomment-1080347032
       - name: Build barretenberg as libbarretenberg-wasm32
         run: |
-          nix build "git+https://github.com/AztecProtocol/barretenberg?rev=${{ env.BB_REV }}#wasm32"
+          nix build "github:AztecProtocol/barretenberg/${{ env.BB_REV }}#wasm32"
           echo "ARTIFACT_UPLOAD_PATH=$(readlink -f result)" >> $GITHUB_ENV
 
       - name: Upload artifact
