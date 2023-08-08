@@ -19,27 +19,27 @@ test("promise resolved", async () => {
   promiseResolved = true;
 });
 
-test("nargo builds noir/test/test_data/6_array sucessfully", async () => {
+test("nargo builds noir/test/execution_success/6_array sucessfully", async () => {
   await within(async () => {
-    cd("./noir/crates/nargo_cli/tests/test_data/6_array");
+    cd("./noir/crates/nargo_cli/tests/execution_success/6_array");
     const command = `${NARGO_BIN} check`;
 
     await $`${command}`.nothrow();
   });
 });
 
-test("nargo creates proof noir/test/test_data/6_array sucessfully", async () => {
+test("nargo creates proof noir/test/execution_success/6_array sucessfully", async () => {
   await within(async () => {
-    cd("./noir/crates/nargo_cli/tests/test_data/6_array");
+    cd("./noir/crates/nargo_cli/tests/execution_success/6_array");
     const command = `${NARGO_BIN} prove 6_array`;
 
     await $`${command}`.nothrow();
   });
 });
 
-test("nargo verifies proof noir/test/test_data/6_array sucessfully", async () => {
+test("nargo verifies proof noir/test/execution_success/6_array sucessfully", async () => {
   await within(async () => {
-    cd("./noir/crates/nargo_cli/tests/test_data/6_array");
+    cd("./noir/crates/nargo_cli/tests/execution_success/6_array");
     const command = `${NARGO_BIN} verify 6_array`;
 
     await $`${command}`.nothrow();
