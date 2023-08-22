@@ -6,6 +6,9 @@ on:
       noir-ref:
         description: The noir reference to checkout
         required: false
+      features:
+        description: The feature flags to release with
+        required: false
       publish:
         description: Whether to publish the build artifacts
         type: boolean
@@ -121,7 +124,7 @@ jobs:
         env:
           BARRETENBERG_BIN_DIR: ${{ github.workspace }}/libbarretenberg-wasm32/bin
         run: |
-          cargo build --package nargo_cli --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cargo build --package nargo_cli --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm ${{ inputs.features }}
 
       - name: Package artifacts
         working-directory: noir
@@ -221,7 +224,7 @@ jobs:
           BARRETENBERG_BIN_DIR: ${{ github.workspace }}/libbarretenberg-wasm32/bin
         run: |
           cargo install cross --force --git https://github.com/cross-rs/cross
-          cross build --package nargo_cli --release --target=${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cross build --package nargo_cli --release --target=${{ matrix.target }} --no-default-features --features plonk_bn254_wasm ${{ inputs.features }}
 
       - name: Package artifacts
         working-directory: noir
@@ -313,7 +316,7 @@ jobs:
         env:
           BARRETENBERG_BIN_DIR: ${{ github.workspace }}/libbarretenberg-wasm32/bin
         run: |
-          cargo build --package nargo_cli --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm
+          cargo build --package nargo_cli --release --target ${{ matrix.target }} --no-default-features --features plonk_bn254_wasm ${{ inputs.features }}
 
       - name: Package artifacts
         working-directory: noir
